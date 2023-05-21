@@ -6,9 +6,6 @@
 
 import gi
 
-gi.require_version('Nautilus', '3.0')
-gi.require_version('Gtk', '3.0')
-
 from gi.repository import Nautilus, GObject, Gtk, Gdk
 
 class CopySambaToWindowsPathExtension(GObject.GObject, Nautilus.MenuProvider):
@@ -40,9 +37,10 @@ class CopySambaToWindowsPathExtension(GObject.GObject, Nautilus.MenuProvider):
             pathstr = path.get_location().get_path()
             self.clipboard.set_text(self.__sanitize_path(pathstr), -1)
 
-    def get_file_items(self, window, files):
+    def get_file_items(self, *args):
         # If there are multiple items to copy, change the label
         # to reflect that.
+        files = args[-1]
         if len(files) > 1:
             item_label = 'Copy Windows Paths'
         else:
@@ -57,13 +55,14 @@ class CopySambaToWindowsPathExtension(GObject.GObject, Nautilus.MenuProvider):
 
         return item_copy_windows_path,
 
-    def get_background_items(self, window, file):
+    def get_background_items(self, *args):
         item_copy_windows_dir_path = Nautilus.MenuItem(
             name='PathUtils::CopySambaDirPathAsWindows',
             label='Copy Directory Windows Path',
             tip='Copy the Samba path of the current directory, as a Windows path, to the clipboard'
         )
 
+        file = args[-1]
         item_copy_windows_dir_path.connect('activate', self.__copy_windows_dir_path, file)
 
         return item_copy_windows_dir_path,
